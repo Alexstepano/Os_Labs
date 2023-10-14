@@ -2,9 +2,8 @@
 #include <iostream>
 #include <random>
 #include <time.h>
-#include <utility>
 #include <vector>
-
+#include <pthread.h>
 using namespace std;
 vector<vector<double>> m1_e;//erosion
 vector<vector<double>> m2_e;
@@ -64,7 +63,7 @@ void dilation_matrix(size_t left, size_t right, bool flag_x)
     size_t y_beg = (flag_x == 1) ? left : 0;
     for (size_t x = x_beg; x < lines; ++x) {
         for (size_t y = y_beg; y < rows; ++y) {
-            double el_cur = DBL_MIN;
+            double el_cur = -DBL_MAX;
 
             for (size_t i = 0; i < n_tempalate; ++i) {
 
@@ -72,6 +71,7 @@ void dilation_matrix(size_t left, size_t right, bool flag_x)
                     if (temp[i][j]) {
                         if (x + i >= n_tempalate / 2 && x + i < m1_d.size() + n_tempalate / 2 && y + j >= n_tempalate / 2 && y + j < m1_d[0].size() + n_tempalate / 2) {
                             el_cur = max(el_cur, m1_d[x + i - n_tempalate / 2][y + j - n_tempalate / 2]);
+
                         }
                     }
                 }
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 {
 
 
-    int threadsN = 16;
+    int threadsN = 2;
     if (argc == 2) {
         threadsN = atoi(argv[1]);
     }
@@ -112,21 +112,23 @@ int main(int argc, char **argv)
     temp.resize(n, vector<bool>(n, 1));
     for (int64_t x = 0; x < m; ++x) {
         for (int64_t y = 0; y < l; ++y) {
-            //cin>>m1_e[x][y];
-            m1_e[x][y] = rand() * 0.1;
+            cin>>m1_e[x][y];
+            //cout<<m1_e[x][y];
+           // m1_e[x][y] = rand() * 0.1;
             m1_d[x][y] = m1_e[x][y];
         }
-        //cout<<endl;
+        //cout<<"temp"<<endl;
     }
-    /*for(int64_t x=0;x<m;++x){
-        for(int64_t y=0;y<l;++y){
+    cout<<"____"<<endl;
+    for(int64_t x=0;x<n;++x){
+        for(int64_t y=0;y<n;++y){
 
                 cin>>a;
                 temp[x][y]=a;
 
         }
 
-    }*/
+    }
     clock_t begin = clock();
     for (int64_t i = 0; i < k; ++i) {
 
@@ -164,7 +166,7 @@ int main(int argc, char **argv)
     }
     clock_t end = clock();
     printf("elapsed %3.6f ms\n", ((double) (end - begin) / CLOCKS_PER_SEC) * 1000);
-    /* for(int64_t x=0;x<m;++x){
+     for(int64_t x=0;x<m;++x){
         for(int64_t y=0;y<l;++y){
             cout<<m1_e[x][y]<<"  ";
         }
@@ -175,7 +177,7 @@ int main(int argc, char **argv)
             cout<<m1_d[x][y]<<"  ";
         }
         cout<<endl;
-    }*/
+    }
 
     return 0;
 }
